@@ -60,12 +60,32 @@ jobs:
             -o ./sbom 
             
           # ls -la ./sbom
-      - name: Verify generated SBOM
-        run: |
-          echo "Generated SBOM files:"
-          find ./sbom -maxdepth 2 -type f -print
 
-          test -s ./sbom/bom.xml   
+
+      # Upload the generated CycloneDX SBOM to Dependency-Track
+      - name: Upload SBOM to Dependency-Track
+        env:
+          # Dependency-Track API URL
+          DTRACK_URL: ${{ vars.DTRACK_URL }}
+
+          # API key stored securely in GitHub Secrets
+          DTRACK_API_KEY: ${{ secrets.DTRACK_API_KEY }}
+
+          # UUID of the Dependency-Track project
+          DTRACK_PROJECT_UUID: ${{ vars.DTRACK_PROJECT_UUID }}
+
+        run: |
+          # Verify that the SBOM file exists
+          test -s ./sbom/bom.xml
+
+          # Upload the SBOM using the Dependency-Track REST API
+          curl --fail-with-body \
+            --request POST \
+            "${DTRACK_URL%/}/api/v1/bom" \
+            --header "X-Api-Key: $DTRACK_API_KEY" \
+            --form "project=$DTRACK_PROJECT_UUID" \
+            --form "bom=@./sbom/bom.xml"
+
           
       - name: Upload application artifact
         uses: actions/upload-artifact@v4
