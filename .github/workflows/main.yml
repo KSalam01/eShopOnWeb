@@ -75,9 +75,15 @@ jobs:
           path: ${{ env.TEMPLATE_FILE }}
           if-no-files-found: error
 
+      - name: Check generated SBOM
+        run: |
+          ls -lah ./sbom/
+
       - name: Upload SBOM
         uses: actions/upload-artifact@v4
         with:
           name: cyclonedx-sbom
-          path: ./sbom/bom.json
+          path: 
+            ./sbom/bom.xml
+            ./sbom/bom.json
           if-no-files-found: error
