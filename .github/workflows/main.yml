@@ -4,13 +4,10 @@ name: eShopOnWeb Build and Test Belastingdienst
 on: [push, workflow_dispatch]
 
 #Environment variables https://docs.github.com/en/actions/learn-github-actions/environment-variables
-env:
-  RESOURCE-GROUP: rg-az400-eshoponweb-ksalam
+env:  
   LOCATION: westeurope
   TEMPLATE-FILE: .azure/bicep/webapp.bicep
-  SUBSCRIPTION-ID: ef32736d-4980-4d2c-b1e6-8dc3ee55faca
-  WEBAPP-NAME: az400-webapp-ksalam
-
+  
 
 jobs:
   #Build, test and publish .net web project in repository
@@ -18,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     #checkout the repository
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     #prepare runner for desired .net version SDK
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '6.0.x'
         include-prerelease: true
