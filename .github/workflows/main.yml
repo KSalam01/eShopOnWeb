@@ -85,5 +85,4 @@ jobs:
           name: cyclonedx-sbom
           path: 
             ./sbom/bom.xml
-            ./sbom/bom.json
           if-no-files-found: error
