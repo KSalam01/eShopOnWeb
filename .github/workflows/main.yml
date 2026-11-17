@@ -59,7 +59,13 @@ jobs:
           dotnet CycloneDX ./eShopOnWeb.sln \
             -o ./sbom 
             
-          ls -la ./sbom
+          # ls -la ./sbom
+      - name: Verify generated SBOM
+        run: |
+          echo "Generated SBOM files:"
+          find ./sbom -maxdepth 2 -type f -print
+
+          test -s ./sbom/bom.xml   
           
       - name: Upload application artifact
         uses: actions/upload-artifact@v4
