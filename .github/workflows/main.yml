@@ -60,7 +60,13 @@ jobs:
             -o ./sbom 
             
           ls -la ./sbom
-        
+          
+      - name: Add CPE to SBOM
+        run: |
+          python .github/scripts/add-cpe.py \
+            ./sbom/bom.json \
+            .github/cpe-mapping.json  
+      
       - name: Upload application artifact
         uses: actions/upload-artifact@v4
         with:
