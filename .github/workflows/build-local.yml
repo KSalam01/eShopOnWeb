@@ -1,0 +1,75 @@
+
+name: eShopOnWeb Local DevSecOps Pipeline
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  buildandtest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore ./eShopOnWeb.sln
+
+      - name: Build application
+        run: |
+          dotnet build ./eShopOnWeb.sln \
+            --configuration Release \
+            --no-restore
+
+      - name: Run unit tests
+        run: |
+          dotnet test ./eShopOnWeb.sln \
+            --configuration Release \
+            --no-build
+
+      - name: Publish application
+        run: |
+          dotnet publish ./src/Web/Web.csproj \
+            --configuration Release \
+            --no-build \
+            --output ./publish
+
+      - name: Install CycloneDX
+        run: dotnet tool install --global CycloneDX
+
+      - name: Generate SBOM
+        run: |
+          mkdir -p sbom
+
+          dotnet CycloneDX ./eShopOnWeb.sln \
+            -o ./sbom
+
+          test -s ./sbom/bom.xml
+
+      - name: Check Dependency-Track API
+        env:
+          DTRACK_URL: ${{ vars.DTRACK_URL }}
+        run: |
+          curl --fail-with-body \
+            "${DTRACK_URL%/}/api/version"
+
+      - name: Upload SBOM to Dependency-Track
+        env:
+          DTRACK_URL: ${{ vars.DTRACK_URL }}
+          DTRACK_API_KEY: ${{ secrets.DTRACK_API_KEY }}
+          DTRACK_PROJECT_UUID: ${{ vars.DTRACK_PROJECT_UUID }}
+        run: |
+          curl --fail-with-body \
+            --request POST \
+            "${DTRACK_URL%/}/api/v1/bom" \
+            --header "X-Api-Key: $DTRACK_API_KEY" \
+            --form "project=$DTRACK_PROJECT_UUID" \
+            --form "bom=@./sbom/bom.xml"
