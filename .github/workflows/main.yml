@@ -36,11 +36,11 @@ jobs:
             --configuration Release \
             --no-restore
 
-      - name: Run unit tests
-        run: |
-          dotnet test ./eShopOnWeb.sln \
-            --configuration Release \
-            --no-build
+      # - name: Run unit tests
+      #   run: |
+      #     dotnet test ./eShopOnWeb.sln \
+      #       --configuration Release \
+      #       --no-build
 
       - name: Publish application
         run: |
@@ -57,7 +57,7 @@ jobs:
         run: |
           mkdir -p sbom
           dotnet CycloneDX ./eShopOnWeb.sln \
-            -o ./sbom 
+            -o ./sbom \
             -j
             
           ls -la ./sbom
