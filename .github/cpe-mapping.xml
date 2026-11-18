@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpeMappings>
+  <component
+      name="log4j-core"
+      vendor="apache"
+      product="log4j" />
+</cpeMappings>
