@@ -58,13 +58,14 @@ jobs:
           mkdir -p sbom
           dotnet CycloneDX ./eShopOnWeb.sln \
             -o ./sbom 
+            -j
             
           ls -la ./sbom
           
       - name: Add CPE to SBOM
         run: |
           python .github/scripts/add-cpe.py \
-            ./sbom/bom.xml \
+            ./sbom/bom.json \
             .github/cpe-mapping.json  
       
       - name: Upload application artifact
@@ -90,5 +91,5 @@ jobs:
         with:
           name: cyclonedx-sbom
           path: 
-            ./sbom/bom.xml
+            ./sbom/bom.json
           if-no-files-found: error
