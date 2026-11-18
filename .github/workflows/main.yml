@@ -57,8 +57,7 @@ jobs:
         run: |
           mkdir -p sbom
           dotnet CycloneDX ./eShopOnWeb.sln \
-            -o ./sbom \
-            -j
+            -o ./sbom --j
             
           ls -la ./sbom
           
